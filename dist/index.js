@@ -19,20 +19,23 @@ class IRCBot {
      * or, if supplied, a configuration object.
      **/
     constructor(config = {}, msgRouter = () => { }) {
-        this.channels = [];
         this.msgRouter = msgRouter;
         this.server = typeof config.server !== 'undefined' ? config.server : IRC_SERVER;
         this.botName = typeof config.username !== 'undefined' ? config.username : IRC_USERNAME;
         this.password = typeof config.password !== 'undefined' ? config.password : IRC_PASSWORD;
-        this.channel = typeof config.channel !== 'undefined' ? config.chanel : IRC_CHANNEL;
+        this.channel = typeof config.channel !== 'undefined' ? config.channel : IRC_CHANNEL;
         if (this.channel.substring(0, 1) !== '#') {
             this.channel = `#${this.channel}`;
         }
-        this.channels = [this.channel];
         this.client = new irc_1.Client(this.server, this.botName, {
-            channels: this.channels,
+            //port: 6697,
+            channels: [this.channel],
+            realName: this.botName,
             userName: this.botName,
             password: this.password,
+            //secure : true,
+            debug: true,
+            showErrors: true,
         });
         this.listeners();
         this.connect();
@@ -54,13 +57,14 @@ class IRCBot {
      **/
     onError(message) {
         const evt = this.eventObject(this.botName, this.botName, 'error', JSON.stringify(message));
-        console.error('[${this.channel}] ERROR: %s: %s', message.command, message.args.join(' '));
+        console.error(`[${this.channel}] ERROR: %s: %s`, message.command, message.args.join(' '));
         this.msgRouter(this.botName, this.botName, evt);
     }
     /**
      * When a user joins, create an EventObject and pass to msgRouter method.
      **/
     onJoin(channel, who) {
+        who = typeof who !== 'string' ? this.botName : who;
         const message = `User ${who} joined [${this.channel}]`;
         const evt = this.eventObject(who, this.botName, 'join', message);
         console.log(`[${this.channel}] JOIN %s => %s: %s`, who, this.botName, evt.message);
