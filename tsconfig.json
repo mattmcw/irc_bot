@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "ES2017",
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "removeComments" : false,
+        "outDir": "dist",
+        "typeRoots": [ 
+            "./node_modules/@types"
+        ]
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
