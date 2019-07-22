@@ -33,9 +33,6 @@ class IRCBot {
             realName: this.botName,
             userName: this.botName,
             password: this.password,
-            //secure : true,
-            debug: true,
-            showErrors: true,
         });
         this.listeners();
         this.connect();
@@ -45,12 +42,17 @@ class IRCBot {
      * onMessage method, which will pass messages to the router if defined
      **/
     listeners() {
+        //this.client.addListener('raw', this.onRaw.bind(this));
         this.client.addListener('error', this.onError.bind(this));
         this.client.addListener('join', this.onJoin.bind(this));
         this.client.addListener('part', this.onPart.bind(this));
+        this.client.addListener('quit', this.onQuit.bind(this));
         this.client.addListener('pm', this.onPM.bind(this));
         this.client.addListener('kick', this.onKick.bind(this));
         this.client.addListener('message', this.onMessage.bind(this));
+    }
+    onRaw(raw) {
+        console.dir(raw);
     }
     /**
      * On a channel error, create an EventObject and pass to msgRouter method.
@@ -77,6 +79,15 @@ class IRCBot {
         const message = `User ${who} parted [${channel}] ${reason}`;
         const evt = this.eventObject(who, this.botName, 'part', message);
         console.log(`[${this.channel}] PART %s => %s: %s`, who, this.botName, evt.message);
+        this.msgRouter(who, this.botName, evt);
+    }
+    /**
+     * When a user quits, create an EventObject and pass to msgRouter method.
+     **/
+    onQuit(channel, who, reason) {
+        const message = `User ${who} quit [${channel}] ${reason}`;
+        const evt = this.eventObject(who, this.botName, 'quit', message);
+        console.log(`[${this.channel}] QUIT %s => %s: %s`, who, this.botName, evt.message);
         this.msgRouter(who, this.botName, evt);
     }
     /**
@@ -135,7 +146,7 @@ class IRCBot {
      * Broadcast a message to the channel as the bot.
      **/
     say(message) {
-        console.log(`[#%s] => %s`, this.channel, message);
+        console.log(`[%s] %s => %s`, this.channel, this.botName, message);
         this.client.say(this.channel, message);
     }
 }

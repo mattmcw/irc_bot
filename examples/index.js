@@ -11,14 +11,23 @@
 const { IRCBot } = require('../dist/')
 
 const config = {
-	server : '127.0.0.1',
+	server : 'localhost',
 	username : process.env.USERNAME,
-	password : process.env.PASSWORD,
+	password : null,
 	channel : 'dev'
 }
 
 function router (from, to, evt) {
 	console.log(JSON.stringify(evt));
+	if (evt.action && evt.action === 'message') {
+		setTimeout(function () {
+			bot.say('That\'s so cool, man!');
+		}, 1000);
+	}
 }
 
  const bot = new IRCBot(config, router);
+
+ setTimeout(function () {
+ 	bot.say('Bot here, reporting in.');
+ }, 2000);
