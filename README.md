@@ -8,7 +8,7 @@ Node.js module for sending and routing messages on a single irc channel.
 Install this module in your node.js project.
 
 ```
-npm install --save https://github.com/mattmcw/irc_bot.git
+npm install --save git+https://github.com/mattmcw/irc_bot.git
 ```
 
 ## Example
