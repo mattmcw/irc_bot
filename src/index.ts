@@ -2,14 +2,24 @@
 
 import { Client } from 'irc';
 
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const IRC_SERVER : string = typeof process.env.IRC_SERVER === 'string' ?
-										  process.env.IRC_SERVER : 'irc.chat.twitch.tv';
+										process.env.IRC_SERVER : 'irc.chat.twitch.tv';
 const IRC_USERNAME : string = typeof process.env.IRC_USERNAME === 'string' ?
-										  process.env.IRC_USERNAME : null;
+										process.env.IRC_USERNAME : null;
 const IRC_PASSWORD : string = typeof process.env.IRC_PASSWORD === 'string' ?
 										process.env.IRC_PASSWORD : null;
 const IRC_CHANNEL : string = typeof process.env.IRC_CHANNEL === 'string' ?
 										process.env.IRC_CHANNEL : null;
+const IRC_PORT : number = typeof process.env.IRC_PORT === 'string' ? 
+										parseInt(process.env.IRC_PORT, 10) : null;
+const IRC_SSL : boolean = (typeof process.env.IRC_SSL === 'undefined' 
+							|| process.env.IRC_SSL == '0') ? 
+										false : true;
+const IRC_SELF_SIGNED : boolean = (typeof process.env.IRC_SELF_SIGNED === 'undefined' 
+									|| process.env.IRC_SELF_SIGNED == '0') ? 
+										false : true;				
 
 interface Config {
 	server? : string;
@@ -39,6 +49,9 @@ class IRCBot {
 	private password : string;
 	private client : Client;
 	private msgRouter : any;
+	private port : number;
+	private ssl : boolean = false;
+	private selfSigned : boolean = false;
 
 	/**
 	 * @constructor
@@ -46,6 +59,7 @@ class IRCBot {
 	 * or, if supplied, a configuration object.
 	 **/
 	constructor (config : any = {}, msgRouter : Function = () => {}) {
+		let clientConfig : any;
 		this.msgRouter = msgRouter;
 		this.server = typeof config.server !== 'undefined' ? config.server : IRC_SERVER;
 		this.botName = typeof config.username !== 'undefined' ? config.username : IRC_USERNAME;
@@ -54,19 +68,45 @@ class IRCBot {
 		if (this.channel.substring(0, 1) !== '#') {
 			this.channel = `#${this.channel}`;
 		}
-		this.client = new Client(this.server, this.botName, {
-			//port: 6697,
+		if (typeof IRC_PORT === 'number') {
+			this.port = IRC_PORT;
+		}
+		if (typeof config.port !== 'undefined') {
+			this.port = config.port;
+		}
+
+		if (IRC_SSL || (typeof config.ssl !== 'undefined' && config.ssl === true)) {
+			this.ssl = true;
+		}
+
+		if (IRC_SELF_SIGNED || (typeof config.selfSigned !== 'undefined' && config.selfSigned === true)) {
+			this.selfSigned = true;
+		}
+
+		clientConfig = {
 			channels: [this.channel],
 			realName : this.botName,
 			userName : this.botName,
 			password : this.password,
-			//secure : true,
 			//debug : true,
-			//showErrors: true, 
+			//showErrors: true,
 			//sasl: false,
-			//autoRejoin: true, // auto rejoin channel when kicked
-			//autoConnect: true, // persistence to connect
-		});
+			autoRejoin: true, // auto rejoin channel when kicked
+			autoConnect: true, // persistence to connect
+		}
+
+		if (this.port) {
+			clientConfig.port = this.port;
+		}
+		if (this.ssl) {
+			clientConfig.secure = true;
+		}
+		if (this.selfSigned) {
+			clientConfig.selfSigned = true;
+		}
+
+		//console.dir(clientConfig)
+		this.client = new Client(this.server, this.botName, clientConfig);
 		this.listeners();
 		this.connect();
 	}
@@ -81,7 +121,7 @@ class IRCBot {
 		this.client.addListener('join', this.onJoin.bind(this));
 		this.client.addListener('part', this.onPart.bind(this));
 		this.client.addListener('quit', this.onQuit.bind(this));
-		this.client.addListener('pm', this.onPM.bind(this));
+		//this.client.addListener('pm', this.onPM.bind(this)); //pms are duplicate right now
 		this.client.addListener('kick', this.onKick.bind(this));
 		this.client.addListener('message', this.onMessage.bind(this));
 	}
