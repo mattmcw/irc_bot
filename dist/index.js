@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 const irc_1 = require("irc");
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const IRC_SERVER = typeof process.env.IRC_SERVER === 'string' ?
     process.env.IRC_SERVER : 'irc.chat.twitch.tv';
 const IRC_USERNAME = typeof process.env.IRC_USERNAME === 'string' ?
@@ -9,6 +10,14 @@ const IRC_PASSWORD = typeof process.env.IRC_PASSWORD === 'string' ?
     process.env.IRC_PASSWORD : null;
 const IRC_CHANNEL = typeof process.env.IRC_CHANNEL === 'string' ?
     process.env.IRC_CHANNEL : null;
+const IRC_PORT = typeof process.env.IRC_PORT === 'string' ?
+    parseInt(process.env.IRC_PORT, 10) : null;
+const IRC_SSL = (typeof process.env.IRC_SSL === 'undefined'
+    || process.env.IRC_SSL == '0') ?
+    false : true;
+const IRC_SELF_SIGNED = (typeof process.env.IRC_SELF_SIGNED === 'undefined'
+    || process.env.IRC_SELF_SIGNED == '0') ?
+    false : true;
 /**
  * IRCBot framework.
  **/
@@ -19,6 +28,9 @@ class IRCBot {
      * or, if supplied, a configuration object.
      **/
     constructor(config = {}, msgRouter = () => { }) {
+        this.ssl = false;
+        this.selfSigned = false;
+        let clientConfig;
         this.msgRouter = msgRouter;
         this.server = typeof config.server !== 'undefined' ? config.server : IRC_SERVER;
         this.botName = typeof config.username !== 'undefined' ? config.username : IRC_USERNAME;
@@ -27,13 +39,40 @@ class IRCBot {
         if (this.channel.substring(0, 1) !== '#') {
             this.channel = `#${this.channel}`;
         }
-        this.client = new irc_1.Client(this.server, this.botName, {
-            //port: 6697,
+        if (typeof IRC_PORT === 'number') {
+            this.port = IRC_PORT;
+        }
+        if (typeof config.port !== 'undefined') {
+            this.port = config.port;
+        }
+        if (IRC_SSL || (typeof config.ssl !== 'undefined' && config.ssl === true)) {
+            this.ssl = true;
+        }
+        if (IRC_SELF_SIGNED || (typeof config.selfSigned !== 'undefined' && config.selfSigned === true)) {
+            this.selfSigned = true;
+        }
+        clientConfig = {
             channels: [this.channel],
             realName: this.botName,
             userName: this.botName,
             password: this.password,
-        });
+            //debug : true,
+            //showErrors: true,
+            //sasl: false,
+            autoRejoin: true,
+            autoConnect: true,
+        };
+        if (this.port) {
+            clientConfig.port = this.port;
+        }
+        if (this.ssl) {
+            clientConfig.secure = true;
+        }
+        if (this.selfSigned) {
+            clientConfig.selfSigned = true;
+        }
+        console.dir(clientConfig);
+        this.client = new irc_1.Client(this.server, this.botName, clientConfig);
         this.listeners();
         this.connect();
     }
