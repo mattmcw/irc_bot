@@ -71,7 +71,7 @@ class IRCBot {
         if (this.selfSigned) {
             clientConfig.selfSigned = true;
         }
-        console.dir(clientConfig);
+        //console.dir(clientConfig)
         this.client = new irc_1.Client(this.server, this.botName, clientConfig);
         this.listeners();
         this.connect();
