@@ -5,17 +5,10 @@
  * and add a message router method to print all messages as JSON
  * Run example with username and password from root of module as so:
  *
- * USERNAME=name PASSWORD=password node examples/
+ * IRC_SERVER= IRC_USERNAME=name IRC_PASSWORD=password node examples/
  **/
 
 const { IRCBot } = require('../dist/')
-
-const config = {
-	server : 'localhost',
-	username : process.env.USERNAME,
-	password : null,
-	channel : 'dev'
-}
 
 function router (from, to, evt) {
 	console.log(JSON.stringify(evt));
@@ -26,7 +19,7 @@ function router (from, to, evt) {
 	}
 }
 
- const bot = new IRCBot(config, router);
+ const bot = new IRCBot({}, router);
 
  setTimeout(function () {
  	bot.say('Bot here, reporting in.');
