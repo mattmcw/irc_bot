@@ -10,9 +10,28 @@
 
 const { IRCBot } = require('../dist/')
 
+const GREETINGS = [ 'Greetings', 'Hi', 'Hey', 'Yo', 'What\'s good', 'Howdy', 'Sup'];
+
+function randomInt (min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function router (from, to, evt) {
-	//console.dir(evt);
+	console.dir(evt);
 	//console.log(evt.action)
+	if (evt.action && evt.action === 'join') {
+		if (evt.bot === evt.from) {
+			//don't greet yourself
+			return false
+		}
+		setTimeout(function () {
+			//be polite
+			const greeting = GREETINGS[randomInt(0, GREETINGS.length - 1)];
+			bot.say(`${greeting} ${from}`);
+		}, 1000);
+	}
 	if (evt.action && evt.action === 'message') {
 		setTimeout(function () {
 			bot.say('That\'s so cool, man!');
