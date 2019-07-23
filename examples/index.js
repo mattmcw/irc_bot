@@ -10,8 +10,12 @@
 
 const { IRCBot } = require('../dist/')
 
+const JOINING = ['I\'m back!', 'Grettings ladies and germs', 'What did I miss?', 'What\s happenin?']
 const GREETINGS = [ 'Greetings', 'Hi', 'Hey', 'Yo', 'What\'s good', 'Howdy', 'Sup'];
+const RESPONSE = ['Absolutely wild', 'Is that for real?', 'Too cool', 'If you say so!', 'Wow...', 'For sure, man', 'Absolutely', 'Haha', 'lol', 'lmao', 'nooooo', 'really?', ';_;', 'ok', 'okay...'];
+const PARTING = ['I loved them...', 'Good riddance!', 'Thank goodness they finally left', 'They will be missed'];
 
+//Bad random function
 function randomInt (min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -19,8 +23,6 @@ function randomInt (min, max) {
 }
 
 function router (from, to, evt) {
-	console.dir(evt);
-	//console.log(evt.action)
 	if (evt.action && evt.action === 'join') {
 		if (evt.bot === evt.from) {
 			//don't greet yourself
@@ -30,17 +32,29 @@ function router (from, to, evt) {
 			//be polite
 			const greeting = GREETINGS[randomInt(0, GREETINGS.length - 1)];
 			bot.say(`${greeting} ${from}`);
-		}, 1000);
+		}, randomInt(200, 2000));
 	}
+
+	if (evt.action && (evt.action === 'quit' || evt.action === 'part')) {
+		setTimeout(function () {
+			//be polite
+			const parting = PARTING[randomInt(0, PARTING.length - 1)];
+			bot.say(parting);
+		}, randomInt(500, 4000));
+	}
+
 	if (evt.action && evt.action === 'message') {
 		setTimeout(function () {
-			bot.say('That\'s so cool, man!');
-		}, 1000);
+			//be sarcastic
+			const response = RESPONSE[randomInt(0, RESPONSE.length - 1)]
+			bot.say(response);
+		}, randomInt(500, 10000));
 	}
 }
 
  const bot = new IRCBot({}, router);
 
  setTimeout(function () {
- 	bot.say('Bot here, reporting in.');
- }, 2000);
+ 	const joining = JOINING[randomInt(0, JOINING.length - 1)];
+ 	bot.say(joining);
+ }, randomInt(500, 3000));
