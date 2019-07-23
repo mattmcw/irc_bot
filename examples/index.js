@@ -11,7 +11,8 @@
 const { IRCBot } = require('../dist/')
 
 function router (from, to, evt) {
-	console.log(JSON.stringify(evt));
+	//console.dir(evt);
+	//console.log(evt.action)
 	if (evt.action && evt.action === 'message') {
 		setTimeout(function () {
 			bot.say('That\'s so cool, man!');
