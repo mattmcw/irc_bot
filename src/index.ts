@@ -121,7 +121,7 @@ class IRCBot {
 		this.client.addListener('join', this.onJoin.bind(this));
 		this.client.addListener('part', this.onPart.bind(this));
 		this.client.addListener('quit', this.onQuit.bind(this));
-		this.client.addListener('pm', this.onPM.bind(this));
+		//this.client.addListener('pm', this.onPM.bind(this)); //pms are duplicate right now
 		this.client.addListener('kick', this.onKick.bind(this));
 		this.client.addListener('message', this.onMessage.bind(this));
 	}
