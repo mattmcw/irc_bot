@@ -136,15 +136,13 @@ class IRCBot {
 	 **/
 	public onError (message : any) {
 	    const evt : EventObject = this.eventObject(this.botName, this.botName, 'error', JSON.stringify(message));
-	     console.error(`[${this.channel}] ERROR: %s: %s`, message.command, message.args.join(' '));
+	    console.error(`[${this.channel}] ERROR: %s: %s`, message.command, message.args.join(' '));
 	    this.msgRouter(this.channel, this.botName, evt);
 	}
 
 	public onConnect(a : any, b : any) {
-		const evt : EventObject = this.eventObject(this.botName, this.botName, 'connected', JSON.stringify({success : true }));
-		console.dir(a)
-		console.dir(b)
-		console.log(`connected`);
+		const evt : EventObject = this.eventObject(this.botName, this.botName, 'connect', 'CONNECT');
+		console.log(`CONNECT @%s`, this.botName);
 		this.connected = true;
 		this.msgRouter(this.channel, this.botName, evt);
 	}

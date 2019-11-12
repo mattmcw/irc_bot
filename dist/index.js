@@ -104,10 +104,8 @@ class IRCBot {
         this.msgRouter(this.channel, this.botName, evt);
     }
     onConnect(a, b) {
-        const evt = this.eventObject(this.botName, this.botName, 'connected', JSON.stringify({ success: true }));
-        console.dir(a);
-        console.dir(b);
-        console.log(`connected`);
+        const evt = this.eventObject(this.botName, this.botName, 'connect', 'CONNECT');
+        console.log(`CONNECT @%s`, this.botName);
         this.connected = true;
         this.msgRouter(this.channel, this.botName, evt);
     }
