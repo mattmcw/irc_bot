@@ -53,6 +53,8 @@ class IRCBot {
 	private ssl : boolean = false;
 	private selfSigned : boolean = false;
 
+	public connected : boolean = false;
+
 	/**
 	 * @constructor
 	 * Start bot with connection to channel configured with either environment variables
@@ -124,6 +126,7 @@ class IRCBot {
 		//this.client.addListener('pm', this.onPM.bind(this)); //pms are duplicate right now
 		this.client.addListener('kick', this.onKick.bind(this));
 		this.client.addListener('message', this.onMessage.bind(this));
+		this.client.addListener('connect', this.onConnect.bind(this))
 	}
 	private onRaw (raw : any) {
 		console.dir(raw);
@@ -135,6 +138,12 @@ class IRCBot {
 	    const evt : EventObject = this.eventObject(this.botName, this.botName, 'error', JSON.stringify(message));
 	     console.error(`[${this.channel}] ERROR: %s: %s`, message.command, message.args.join(' '));
 	    this.msgRouter(this.channel, this.botName, evt);
+	}
+
+	public onConnect(a : any, b : any) {
+		console.log(`connected`);
+		this.connected = true;
+		this.msgRouter(this.channel, this.botName, { connected })
 	}
 
 	/**
