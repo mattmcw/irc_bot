@@ -1,6 +1,6 @@
 {
   "name": "irc_bot",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Node.js module for sending and routing messages on a single irc channel.",
   "main": "dist/index.js",
   "scripts": {

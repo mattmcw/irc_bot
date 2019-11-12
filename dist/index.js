@@ -30,6 +30,7 @@ class IRCBot {
     constructor(config = {}, msgRouter = () => { }) {
         this.ssl = false;
         this.selfSigned = false;
+        this.connected = false;
         let clientConfig;
         this.msgRouter = msgRouter;
         this.server = typeof config.server !== 'undefined' ? config.server : IRC_SERVER;
@@ -89,6 +90,7 @@ class IRCBot {
         //this.client.addListener('pm', this.onPM.bind(this)); //pms are duplicate right now
         this.client.addListener('kick', this.onKick.bind(this));
         this.client.addListener('message', this.onMessage.bind(this));
+        this.client.addListener('connect', this.onConnect.bind(this));
     }
     onRaw(raw) {
         console.dir(raw);
@@ -99,6 +101,14 @@ class IRCBot {
     onError(message) {
         const evt = this.eventObject(this.botName, this.botName, 'error', JSON.stringify(message));
         console.error(`[${this.channel}] ERROR: %s: %s`, message.command, message.args.join(' '));
+        this.msgRouter(this.channel, this.botName, evt);
+    }
+    onConnect(a, b) {
+        const evt = this.eventObject(this.botName, this.botName, 'connected', JSON.stringify({ success: true }));
+        console.dir(a);
+        console.dir(b);
+        console.log(`connected`);
+        this.connected = true;
         this.msgRouter(this.channel, this.botName, evt);
     }
     /**
