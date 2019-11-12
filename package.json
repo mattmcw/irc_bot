@@ -1,11 +1,16 @@
 {
   "name": "irc_bot",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Node.js module for sending and routing messages on a single irc channel.",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha test",
-    "compile": "./node_modules/.bin/tsc --project tsconfig.json"
+    "compile": "./node_modules/.bin/tsc --project tsconfig.json",
+    "pretest": "npm install",
+    "version": "",
+    "postversion": "git push && git push --tags",
+    "u": "npm run git -- -m \"update\"",
+    "git": "npm version patch --force"
   },
   "repository": {
     "type": "git",
@@ -26,8 +31,8 @@
   },
   "devDependencies": {
     "@types/irc": "^0.3.33",
-    "@types/node": "^12.6.8",
-    "mocha": "^6.2.0",
-    "typescript": "^3.5.3"
+    "@types/node": "^12.12.7",
+    "mocha": "^6.2.2",
+    "typescript": "^3.7.2"
   }
 }
