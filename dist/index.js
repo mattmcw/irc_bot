@@ -30,9 +30,11 @@ class IRCBot {
     constructor(config = {}, msgRouter = () => { }) {
         this.ssl = false;
         this.selfSigned = false;
+        this.log = true;
         this.connected = false;
         let clientConfig;
         this.msgRouter = msgRouter;
+        this.log = typeof config.log !== 'undefined' ? config.log : true;
         this.server = typeof config.server !== 'undefined' ? config.server : IRC_SERVER;
         this.botName = typeof config.username !== 'undefined' ? config.username : IRC_USERNAME;
         this.password = typeof config.password !== 'undefined' ? config.password : IRC_PASSWORD;
@@ -105,7 +107,8 @@ class IRCBot {
     }
     onConnect(a, b) {
         const evt = this.eventObject(this.botName, this.botName, 'connect', 'CONNECT');
-        console.log(`CONNECT @%s`, this.botName);
+        if (this.log)
+            console.log(`CONNECT @%s`, this.botName);
         this.connected = true;
         this.msgRouter(this.channel, this.botName, evt);
     }
@@ -116,7 +119,8 @@ class IRCBot {
         who = typeof who !== 'string' ? this.botName : who;
         const message = `User ${who} joined ${this.channel}`;
         const evt = this.eventObject(who, this.channel, 'join', message);
-        console.log(`[${this.channel}] JOIN @%s => %s: %s`, who, this.channel, evt.message);
+        if (this.log)
+            console.log(`[${this.channel}] JOIN @%s => %s: %s`, who, this.channel, evt.message);
         this.msgRouter(who, this.channel, evt);
     }
     /**
@@ -125,7 +129,8 @@ class IRCBot {
     onPart(channel, who, reason) {
         const message = `User ${who} parted ${channel} ${reason}`;
         const evt = this.eventObject(who, this.channel, 'part', message);
-        console.log(`[${this.channel}] PART @%s => %s: %s`, who, this.channel, evt.message);
+        if (this.log)
+            console.log(`[${this.channel}] PART @%s => %s: %s`, who, this.channel, evt.message);
         this.msgRouter(who, this.channel, evt);
     }
     /**
@@ -134,7 +139,8 @@ class IRCBot {
     onQuit(channel, who, reason) {
         const message = `User ${who} quit ${channel} ${reason}`;
         const evt = this.eventObject(who, this.botName, 'quit', message);
-        console.log(`[${this.channel}] QUIT @%s => %s: %s`, who, this.channel, evt.message);
+        if (this.log)
+            console.log(`[${this.channel}] QUIT @%s => %s: %s`, who, this.channel, evt.message);
         this.msgRouter(who, this.channel, evt);
     }
     /**
@@ -142,7 +148,8 @@ class IRCBot {
      **/
     onPM(from, message) {
         const evt = this.eventObject(from, this.botName, 'pm', message);
-        console.log(`PM @%s => @%s: %s`, from, this.botName, evt.message);
+        if (this.log)
+            console.log(`PM @%s => @%s: %s`, from, this.botName, evt.message);
         this.msgRouter(from, this.botName, evt);
     }
     /**
@@ -151,7 +158,8 @@ class IRCBot {
     onKick(channel, who, by, reason) {
         const message = `${who} was kicked from [${channel}] by ${by} ${reason}`;
         const evt = this.eventObject(by, who, 'kick', message);
-        console.log(`[${this.channel}] KICK @%s => @%s: %s`, by, who, evt.message);
+        if (this.log)
+            console.log(`[${this.channel}] KICK @%s => @%s: %s`, by, who, evt.message);
         this.msgRouter(by, who, evt);
     }
     /**
@@ -159,14 +167,16 @@ class IRCBot {
      **/
     onMessage(from, to, message) {
         const evt = this.eventObject(from, to, 'message', message);
-        console.log(`[${this.channel}] @%s => %s: %s`, from, to, evt.message);
+        if (this.log)
+            console.log(`[${this.channel}] @%s => %s: %s`, from, to, evt.message);
         this.msgRouter(from, to, evt);
     }
     /**
      * Connect the bot to a channel.
      **/
     connect() {
-        console.log(`Bot connecting to ${this.channel}`);
+        if (this.log)
+            console.log(`Bot connecting to ${this.channel}`);
         this.client.join(`${this.channel}`);
     }
     /**
@@ -193,7 +203,8 @@ class IRCBot {
      * Broadcast a message to the channel as the bot.
      **/
     say(message) {
-        console.log(`[%s] @%s => %s`, this.channel, this.botName, message);
+        if (this.log)
+            console.log(`[%s] @%s => %s`, this.channel, this.botName, message);
         this.client.say(this.channel, message);
     }
 }
