@@ -92,7 +92,8 @@ class IRCBot {
 			realName : this.botName,
 			userName : this.botName,
 			password : this.password,
-			//debug : true,
+			nick : this.botName,
+			debug : true,
 			//showErrors: true,
 			//sasl: false,
 			autoRejoin: true, // auto rejoin channel when kicked
