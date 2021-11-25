@@ -63,7 +63,7 @@ class IRCBot {
             //showErrors: true,
             //sasl: false,
             autoRejoin: true,
-            autoConnect: true,
+            autoConnect: true, // persistence to connect
         };
         if (this.port) {
             clientConfig.port = this.port;
@@ -177,7 +177,7 @@ class IRCBot {
     connect() {
         if (this.log)
             console.log(`Bot connecting to ${this.channel}`);
-        this.client.join(`${this.channel}`);
+        this.client.join(`${this.channel} ${this.botName}`);
     }
     /**
      * Returns a UTC timestamp in millisections.

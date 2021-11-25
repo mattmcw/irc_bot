@@ -213,7 +213,7 @@ class IRCBot {
 	 **/
 	private connect () {
 		if (this.log) console.log(`Bot connecting to ${this.channel}`);
-		this.client.join(`${this.channel}`);
+		this.client.join(`${this.channel} ${this.botName}`);
 	}
 
 	/**
